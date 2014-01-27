@@ -1,37 +1,53 @@
 from django.db import models
 
-class Categories(models.Model):
+class Category(models.Model):
     category = models.CharField(max_length=20)
+    def __str__(self):
+        return self.category
 
-class Movements(models.Model):
+class Movement(models.Model):
     movement = models.CharField(max_length=100)
+    def __str__(self):
+        return self.movement
 
-class Workouts(models.Model):
-    date = models.DateTimeField('date of workout')
-    category = models.ForeignKey(Categories)
+class Workout(models.Model):
+    category = models.ForeignKey(Category)
     detail = models.TextField()
-    notes = models.CharField(max_length=200, null=True)
+    def __str__(self):
+        return self.detail
 
-class Equipments(models.Model):
-    item = models.CharField(max_length=100)
-
-class Users(models.Model):
+class User(models.Model):
     username = models.CharField(max_length=20)
     password_hash = models.TextField()
+    def __str__(self):
+        return self.username
 
-class Preferences(models.Model):
-    user = models.ForeignKey(Users)
+class Log(models.Model):
+    user = models.ForeignKey(User)
+    date = models.DateTimeField('date of workout')
+    workout = models.ForeignKey(Workout)
+    notes = models.CharField(max_length=200, null=True)
+    def __str__(self):
+        return self.date
+    
+class Equipment(models.Model):
+    item = models.CharField(max_length=100)
+    def __str__(self):
+        return self.item
+
+class Preference(models.Model):
+    user = models.ForeignKey(User)
     days_per_week = models.PositiveSmallIntegerField(default=2)
-    category = models.ForeignKey(Categories)
+    category = models.ForeignKey(Category)
 
-class Ownerships(models.Model):
-    user = models.ForeignKey(Users)
-    equipment = models.ForeignKey(Equipments)
+class Ownership(models.Model):
+    user = models.ForeignKey(User)
+    equipment = models.ForeignKey(Equipment)
 
-class MovementTags(models.Model):
-    workout = models.ForeignKey(Workouts)
-    movement = models.ForeignKey(Movements)
+class MovementTag(models.Model):
+    workout = models.ForeignKey(Workout)
+    movement = models.ForeignKey(Movement)
 
-class RequiredEquipments(models.Model):
-    workout = models.ForeignKey(Workouts)
-    item = models.ForeignKey(Equipments)
+class RequiredEquipment(models.Model):
+    workout = models.ForeignKey(Workout)
+    item = models.ForeignKey(Equipment)
