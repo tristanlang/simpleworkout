@@ -1,0 +1,19 @@
+{% extends 'workout/base_template.html' %}
+
+{% block header %}
+    {% block title %}Today's Workout{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% if workout %}
+        {{workout.detail}}
+        <br>
+        <div class="row">
+            <div class="col-sm-2"><a href="#"><button type="button" class="btn btn-success">Completed</button></a></div>
+            <div class="col-sm-2"><a href="#"><button type="button" class="btn btn-danger">Reject</button></a></div>
+            <div class="col-sm-2"><a href="#"><button type="button" class="btn btn-info">Rest Day</button></a></div>
+        </div>
+    {% else %}
+        <p>Tomorrow's workout will appear at midnight!</p>
+    {% endif %}
+{% endblock %}

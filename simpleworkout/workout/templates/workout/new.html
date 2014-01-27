@@ -1,0 +1,19 @@
+{% extends 'workout/base_template.html' %}
+
+{% block header %}
+    {% block title %}Add New Workout{% endblock %}
+{% endblock %}
+
+{% block content %}
+    <form method="put">
+        <select class="form-control" name="type">
+            <option>Cardio</option>
+            <option>Strength</option>
+            <option>Circuit</option>
+        </select>
+
+        <textarea class="form-control" rows="6" name="detail"></textarea>
+
+        <div><button type="submit" class="btn btn-default">Add New</button></div>
+    </form>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'workout/base_template.html' %}
+
+{% block header %}
+    {% block title %}Preferences{% endblock %}
+{% endblock %}
+
+{% block content %}
+    <form method="put">
+        <select multiple class="form-control" name="equipment">
+          <option>Barbell</option>
+          <option>24kg Kettlebells</option>
+          <option>16kg Kettlebells</option>
+          <option>Pullup Bar</option>
+          <option>Airdyne</option>
+        </select>
+
+        <label class="control-label">Percentage Occurrence</label>
+        <input type="text" class="form-control" placeholder="Cardio" name="cardio">
+        <input type="text" class="form-control" placeholder="Strength" name="strength">
+        <input type="text" class="form-control" placeholder="Circuit" name="circuit">
+
+        <button type="submit" class="btn btn-default">Submit Preferences</button>
+    </form>
+{% endblock %}

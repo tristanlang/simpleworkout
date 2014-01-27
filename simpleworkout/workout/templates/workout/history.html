@@ -1,0 +1,25 @@
+{% extends 'workout/base_template.html' %}
+
+{% block header %}
+    {% block title %}Workout History{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% for workout in workouts %}
+        <br>
+        <table class="table table-striped">
+            <tr>
+                <th class="col-sm-2">Date</th>
+                <th class="col-sm-2">Type</th>
+                <th class="col-sm-5">Workout</th>
+                <th class="col-sm-3">Notes</th>
+            </tr>
+            <tr>
+                <td class="col-sm-2">{{workout.date}}</td>
+                <td class="col-sm-2">{{workout.type}}</td>
+                <td class="col-sm-5">{{workout.detail}}</td>
+                <td class="col-sm-3">{{workout.notes}}</td>
+            </tr>
+        </table>
+    {% endfor %}
+{% endblock %}
