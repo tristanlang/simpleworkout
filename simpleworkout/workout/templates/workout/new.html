@@ -6,10 +6,10 @@
 
 {% block content %}
     <form method="put">
-        <select class="form-control" name="type">
-            <option>Cardio</option>
-            <option>Strength</option>
-            <option>Circuit</option>
+        <select class="form-control" name="category">
+            {% for category in categories %}
+            <option>category</option>
+            {% endfor %}
         </select>
 
         <textarea class="form-control" rows="6" name="detail"></textarea>
