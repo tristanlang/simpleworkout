@@ -14,12 +14,12 @@
             <th class="col-sm-3">Notes</th>
         </tr>
 
-        {% for workout in workouts %}
+        {% for log in logs %}
         <tr>
-            <td class="col-sm-2">{{workout.date}}</td>
-            <td class="col-sm-2">{{workout.category}}</td>
-            <td class="col-sm-5">{{workout.detail}}</td>
-            <td class="col-sm-3">{{workout.notes}}</td>
+            <td class="col-sm-2">{{log.date}}</td>
+            <td class="col-sm-2">{{log.workout.category}}</td>
+            <td class="col-sm-5">{{log.workout.detail}}</td>
+            <td class="col-sm-3">{{log.notes}}</td>
         </tr>
         {% endfor %}
     </table>
