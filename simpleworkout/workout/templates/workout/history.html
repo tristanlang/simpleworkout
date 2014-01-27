@@ -5,21 +5,22 @@
 {% endblock %}
 
 {% block content %}
-    {% for workout in workouts %}
-        <br>
-        <table class="table table-striped">
-            <tr>
-                <th class="col-sm-2">Date</th>
-                <th class="col-sm-2">Type</th>
-                <th class="col-sm-5">Workout</th>
-                <th class="col-sm-3">Notes</th>
-            </tr>
-            <tr>
-                <td class="col-sm-2">{{workout.date}}</td>
-                <td class="col-sm-2">{{workout.category}}</td>
-                <td class="col-sm-5">{{workout.detail}}</td>
-                <td class="col-sm-3">{{workout.notes}}</td>
-            </tr>
-        </table>
-    {% endfor %}
+    <br>
+    <table class="table table-striped">
+        <tr>
+            <th class="col-sm-2">Date</th>
+            <th class="col-sm-2">Type</th>
+            <th class="col-sm-5">Workout</th>
+            <th class="col-sm-3">Notes</th>
+        </tr>
+
+        {% for workout in workouts %}
+        <tr>
+            <td class="col-sm-2">{{workout.date}}</td>
+            <td class="col-sm-2">{{workout.category}}</td>
+            <td class="col-sm-5">{{workout.detail}}</td>
+            <td class="col-sm-3">{{workout.notes}}</td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

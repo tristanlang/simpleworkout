@@ -9,7 +9,7 @@ class Workouts(models.Model):
     detail = models.TextField()
     notes = models.CharField(max_length=200)
 
-class Equipment(models.Model):
+class Equipments(models.Model):
     item = models.CharField(max_length=100)
 
 class Users(models.Model):
@@ -21,6 +21,6 @@ class Preferences(models.Model):
     days_per_week = models.PositiveSmallIntegerField()
     category = models.ForeignKey(WorkoutCategories)
 
-class Ownership(models.Model)
+class Ownerships(models.Model)
     user = models.ForeignKey(Users)
-    equipment = models.ForeignKey(Equipment)
+    equipment = models.ForeignKey(Equipments)
