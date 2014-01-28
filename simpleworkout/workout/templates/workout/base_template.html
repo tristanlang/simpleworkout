@@ -14,14 +14,14 @@
         
         <div class="col-sm-5 text-right">
             <ul class="list-inline">
-                <li><a href="#">Workout</a></li>
-                <li><a href="#">History</a></li>
-                <li><a href="#">Add New</a></li>
+                <li><a href="{% url 'workout:main' %}">Workout</a></li>
+                <li><a href="{% url 'workout:history' %}">History</a></li>
+                <li><a href="{% url 'workout:new' %}">Add New</a></li>
                 <li><a href="#">Preferences</a></li>
-                <li><a href="#">About</a></li>
+                <li><a href="{% url 'workout:about' %}">About</a></li>
             </ul>
         </div>
-
+        
         <div class="col-sm-12">
             {% block content %}{% endblock %}
         </div>
