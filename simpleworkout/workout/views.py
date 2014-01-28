@@ -9,12 +9,6 @@ from workout.models import Log, Workout, Category, Ownership, Preference
 
 # signup view
 # login view
-#
-# xxxxx workout view
-# xxxxx history view
-# xxxxx add new view
-# preferences view
-# xxxxx about view 
 
 todays_workout = None
 
@@ -67,21 +61,24 @@ def workout(request):
 
     global todays_workout
 
-    # temporarily just use tristanlang as all users
-    user = User.objects.get_by_natural_key('tristanlang')
-    requestdatetime = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
-
-    # check for log with today's date and current user
-    listfilter = {'date__gte': requestdatetime.date(), 'user': user}
-    todaylog = Log.objects.filter(**listfilter)
-    if not todaylog:
-        if not todays_workout or todays_workout[0] < requestdatetime.date():
-            todays_workout = choose_workout(user, requestdatetime)
-        context = {'workout': todays_workout[1]}
+    if request.method == 'POST':
+        print(request.id)
     else:
-        context = {'log': todaylog[0]}
-    
-    return render(request, 'workout/workout.html', context)
+        # temporarily just use tristanlang as all users
+        user = User.objects.get_by_natural_key('tristanlang')
+        requestdatetime = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
+
+        # check for log with today's date and current user
+        listfilter = {'date__gte': requestdatetime.date(), 'user': user}
+        todaylog = Log.objects.filter(**listfilter)
+        if not todaylog:
+            if not todays_workout or todays_workout[0] < requestdatetime.date():
+                todays_workout = choose_workout(user, requestdatetime)
+            context = {'workout': todays_workout[1]}
+        else:
+            context = {'log': todaylog[0]}
+        
+        return render(request, 'workout/workout.html', context)
 
         
 

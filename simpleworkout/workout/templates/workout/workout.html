@@ -10,9 +10,15 @@
         <p>{{workout.detail}}</p>
         <br><br>
         <div class="row">
-            <div class="col-sm-2"><a href="#"><button type="button" class="btn btn-success">Completed</button></a></div>
-            <div class="col-sm-2"><a href="#"><button type="button" class="btn btn-danger">Reject</button></a></div>
-            <div class="col-sm-2"><a href="#"><button type="button" class="btn btn-info">Rest Day</button></a></div>
+            <form method="post" action="/workout/completed/" id="completed">
+                {% csrf_token %}
+                <div class="col-sm-2"><input type="submit" class="btn btn-success" name="completed" value="Completed"></div>
+            </form>
+                <!--<div class="col-sm-2"><a href="#"><button type="button" class="btn btn-danger">Reject</button></a></div>-->
+            <form method="post" action="/workout/completed/" id="rest">
+                {% csrf_token %}
+                <div class="col-sm-2"><input type="submit" class="btn btn-info" name="rest" value="Rest Day"></div>
+            </form>
         </div>
     {% elif log %}
         <p>Tomorrow's workout will appear at midnight!</p>
