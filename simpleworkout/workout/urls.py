@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     url(r'^main/$', views.workout, name='main'),
     url(r'^history/$', views.history, name='history'),
     url(r'^new/$', views.new, name='new'),
+    url(r'^preferences/$', views.preferences, name='preferences'),
 )

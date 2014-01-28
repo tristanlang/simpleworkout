@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
 
-from workout.models import Log, Workout, Category
+from workout.models import Log, Workout, Category, Ownership, Preference
 
 # signup view
 # login view
@@ -49,8 +49,10 @@ def choose_workout(user, requestdatetime):
     return (today, workout)
 
 
+
 def about(request):
     return render(request, 'workout/about.html')
+
 
 
 def workout(request):
@@ -82,6 +84,7 @@ def workout(request):
     return render(request, 'workout/workout.html', context)
 
         
+
 def history(request):
     try:
         history = Log.objects.all().order_by('-date')[:7]
@@ -91,6 +94,17 @@ def history(request):
     return render(request, 'workout/history.html', context)
 
 
+
 def new(request):
     context = {'categories': Category.objects.all()}
     return render(request, 'workout/new.html', context)
+
+
+
+def preferences(request):
+    # temporarily just use tristanlang as all users
+    user = User.objects.get_by_natural_key('tristanlang')
+    ownerships = Ownership.objects.filter(user=user)
+    preferences = Preference.objects.filter(user=user)
+    context = {'ownerships': ownerships, 'preferences': preferences}
+    return render(request, 'workout/preferences.html', context)

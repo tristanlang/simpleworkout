@@ -5,20 +5,35 @@
 {% endblock %}
 
 {% block content %}
-    <form method="put">
+    <div class="col-sm-3">
+        <form method="put">
+        <br>
+        <label class="control-label">Equipment You Own</label>
         <select multiple class="form-control" name="equipment">
-          
-          {% for equipment in equipments %}
-          <option>{{equipment.item}}</option>
-          {% endfor %}
+                  
+        {% for ownership in ownerships %}
+            <option>{{ownership.equipment.item}}</option>
+        {% endfor %}
 
         </select>
 
-        <label class="control-label">Percentage Occurrence</label>
-        {% for category in categories %}
-        <input type="text" class="form-control" placeholder="{{category.category}}" name="{{category.category}}">
+        <br>
+
+        <label class="control-label">Desired Days Per Week</label>
+        <br>
+        {% for preference in preferences %}
+            <div class="row">
+                <div class="col-sm-4 text-right">{{preference.category.category}}</div>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" placeholder="{{preference.category.category}}" value="{{preference.days_per_week}}">
+                </div>
+            <br>
+            </div>
         {% endfor %}
 
+        <br>
+
         <button type="submit" class="btn btn-default">Submit Preferences</button>
-    </form>
+        </form>
+    </div>
 {% endblock %}
