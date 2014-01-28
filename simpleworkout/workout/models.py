@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Category(models.Model):
     category = models.CharField(max_length=20)
@@ -15,12 +16,6 @@ class Workout(models.Model):
     detail = models.TextField()
     def __str__(self):
         return self.detail
-
-class User(models.Model):
-    username = models.CharField(max_length=20)
-    password_hash = models.TextField()
-    def __str__(self):
-        return self.username
 
 class Log(models.Model):
     user = models.ForeignKey(User)
