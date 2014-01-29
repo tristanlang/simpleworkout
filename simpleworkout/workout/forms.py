@@ -7,4 +7,8 @@ class WorkoutNotesForm(forms.Form):
 
 class AddNewWorkoutForm(forms.Form):
     category = forms.ModelChoiceField(Category.objects.filter(~Q(category='Rest Day')), empty_label='(Select Workout Category)')
-    detail = forms.CharField()
+    detail = forms.CharField(widget=forms.Textarea)
+
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)

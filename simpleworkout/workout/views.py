@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import generic
 import random
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, logout, login
 from django.utils import timezone
 import datetime
 
 from workout.models import Log, Workout, Category, Ownership, Preference
-from workout.forms import WorkoutNotesForm, AddNewWorkoutForm
+from workout.forms import WorkoutNotesForm, AddNewWorkoutForm, LoginForm
 
 # signup view
 # login view
@@ -116,6 +117,36 @@ def new(request):
         #context = {'categories': Category.objects.all()}
         context = {'form': form}
         return render(request, 'workout/new.html', context)
+
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+                user = authenticate(username=form.cleaned_data['username'], 
+                    password = form.cleaned_data['password'])
+                
+                if user is not None and user.is_active:
+                    login(request, user)
+                    print(request)
+                    newurl = request.GET.get('next')
+                    return redirect(newurl)
+                else:
+                    # redirect back to login page, with error message about
+                    #   incorrect login info
+                    pass
+    else:
+        form = LoginForm()
+        context = {'form': form}
+        return render(request, 'workout/login.html', context)
+
+
+
+def logout_view(request):
+    logout(request)
+    newurl = request.GET.get('next')
+    return redirect(newurl)
 
 
 
