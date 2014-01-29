@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import datetime
 
 class Category(models.Model):
     category = models.CharField(max_length=20)
@@ -23,7 +25,7 @@ class Log(models.Model):
     workout = models.ForeignKey(Workout)
     notes = models.CharField(max_length=200, null=True)
     def __str__(self):
-        return self.date
+        return str(timezone.make_aware(self.date,timezone.get_default_timezone()))
     
 class Equipment(models.Model):
     item = models.CharField(max_length=100)
