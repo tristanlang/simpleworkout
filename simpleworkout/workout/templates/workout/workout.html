@@ -9,25 +9,38 @@
         <br>
         <p>{{workout.detail}}</p>
         <br><br>
-        <div class="row">
-            <form method="post" action="/workout/completed/" id="completed">
-                {% csrf_token %}
-                <div class="col-sm-2"><input type="submit" class="btn btn-success" name="completed" value="Completed"></div>
-            </form>
-                <!--<div class="col-sm-2"><a href="#"><button type="button" class="btn btn-danger">Reject</button></a></div>-->
-            <form method="post" action="/workout/completed/" id="rest">
-                {% csrf_token %}
-                <div class="col-sm-2"><input type="submit" class="btn btn-info" name="rest" value="Rest Day"></div>
-            </form>
-        </div>
+        {% if not addnotes %}
+            <div class="row">
+                <form method="post" id="completed">
+                    {% csrf_token %}
+                    <div class="col-sm-2"><input type="submit" class="btn btn-success" name="completed" value="Completed"></div>
+                    <!--<div class="col-sm-2"><a href="#"><button type="button" class="btn btn-danger">Reject</button></a></div>-->
+                    <div class="col-sm-2"><input type="submit" class="btn btn-info" name="rest" value="Rest Day"></div>
+                </form>
+            </div>
+        {% endif %}
     {% elif log %}
         <p>Tomorrow's workout will appear at midnight!</p>
         <hr>
         <p>Today you already completed:</p>
         {{log.workout.detail}}
+        <hr>
         <p>Notes:</p>
         {{log.notes}}
     {% else %}
         <p>Tomorrow's workout will appear at midnight!</p>
+    {% endif %}
+
+    {% if addnotes %}
+        <br><br>
+        <label class="control-label">Notes</label>
+        <div class="row">
+            <form method="post">
+                {% csrf_token %}
+                <div class="col-sm-4"><textarea class="form-control" rows="3" name="notes"></textarea></div>
+                <br>
+                <div class="col-sm-2"><input type="submit" class="btn btn-success" name="noted" value="Add Notes"></div>
+            </form>
+        </div>
     {% endif %}
 {% endblock %}

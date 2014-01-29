@@ -6,6 +6,7 @@ from django.utils import timezone
 import datetime
 
 from workout.models import Log, Workout, Category, Ownership, Preference
+from workout.forms import NotesForm
 
 # signup view
 # login view
@@ -61,13 +62,39 @@ def workout(request):
 
     global todays_workout
 
-    if request.method == 'POST':
-        print(request.id)
-    else:
-        # temporarily just use tristanlang as all users
-        user = User.objects.get_by_natural_key('tristanlang')
-        requestdatetime = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
+    # temporarily just use tristanlang as all users
+    user = User.objects.get_by_natural_key('tristanlang')
+    requestdatetime = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
 
+    if request.method == 'POST':
+        rest = request.POST.get('rest')
+        completed = request.POST.get('completed')
+        noted = request.POST.get('noted')
+
+        if completed:
+            if todays_workout and todays_workout[0] >= requestdatetime.date():
+                context = {'workout': todays_workout[1], 'addnotes': True}
+                return render(request, 'workout/workout.html', context)
+
+        if rest:
+            restday = Workout.objects.get(detail='Rest Day')
+            log = Log(user=user, workout=workout, date=requestdatetime)
+            log.save()
+            context = {'log': log}
+            return render(request, 'workout/workout.html', context)
+
+        if noted:
+            form = NotesForm(request.POST)
+            if form.is_valid():
+                notes = form.cleaned_data['notes']
+                log = Log(user=user, workout=todays_workout[1], date=requestdatetime, notes=notes)
+                log.save()
+                todays_workout = None
+                context = {'log': log}
+                return render(request, 'workout/workout.html', context)
+
+
+    else: # GET
         # check for log with today's date and current user
         listfilter = {'date__gte': requestdatetime.date(), 'user': user}
         todaylog = Log.objects.filter(**listfilter)
