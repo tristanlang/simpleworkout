@@ -16,10 +16,10 @@
 
         {% for log in logs %}
         <tr>
-            <td class="col-sm-2">{{log.date.date}}</td>
-            <td class="col-sm-2">{{log.workout.category}}</td>
-            <td class="col-sm-5">{{log.workout.detail}}</td>
-            <td class="col-sm-3">{{log.notes}}</td>
+            <td style="vertical-align:middle" class="col-sm-2">{{log.date.date}}</td>
+            <td style="vertical-align:middle" class="col-sm-2">{{log.workout.category}}</td>
+            <td style="vertical-align:middle" class="col-sm-5">{{log.workout.detail|linebreaks}}</td>
+            <td style="vertical-align:middle" class="col-sm-3">{{log.notes}}</td>
         </tr>
         {% endfor %}
     </table>
