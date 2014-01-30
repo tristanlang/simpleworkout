@@ -12,7 +12,7 @@ from workout.forms import WorkoutNotesForm, AddNewWorkoutForm, LoginForm, Prefer
 # signup view
 # login view
 
-todays_workout = None
+todays_workout = {}
 
 def weight_first_category(category1, category2):
     if random.randint(0,2):
@@ -61,16 +61,17 @@ def workout(request):
 
     if request.method == 'POST':
         if request.user.is_anonymous():
-            context = {'workout': todays_workout[1], 'submiterror': True}
+            context = {'workout': todays_workout[user][1], 'submiterror': True}
             return render(request, 'workout/workout.html', context)
 
+        # see which button was clicked
         rest = request.POST.get('rest')
         completed = request.POST.get('completed')
         noted = request.POST.get('noted')
 
         if completed:
-            if todays_workout and todays_workout[0] >= requestdate:
-                context = {'workout': todays_workout[1], 'addnotes': True}
+            if user in todays_workout and todays_workout[user][0] >= requestdate:
+                context = {'workout': todays_workout[user][1], 'addnotes': True}
                 return render(request, 'workout/workout.html', context)
 
         if rest:
@@ -84,20 +85,19 @@ def workout(request):
             form = WorkoutNotesForm(request.POST)
             if form.is_valid():
                 notes = form.cleaned_data['notes']
-                log = Log(user=user, workout=todays_workout[1], date=requestdate, notes=notes)
+                log = Log(user=user, workout=todays_workout[user][1], date=requestdate, notes=notes)
                 log.save()
-                todays_workout = None
+                todays_workout[user] = None
                 context = {'log': log}
                 return render(request, 'workout/workout.html', context)
-
-    else: # GET
+    else:
         # check for log with today's date and current user
         listfilter = {'date__gte': requestdate, 'user': user}
         todaylog = Log.objects.filter(**listfilter)
         if not todaylog:
-            if not todays_workout or todays_workout[0] < requestdate:
-                todays_workout = choose_workout(user, requestdate)
-            context = {'workout': todays_workout[1]}
+            if user not in todays_workout or todays_workout[user][0] < requestdate:
+                todays_workout[user] = choose_workout(user, requestdate)
+            context = {'workout': todays_workout[user][1]}
         else:
             context = {'log': todaylog[0]}
         return render(request, 'workout/workout.html', context)
