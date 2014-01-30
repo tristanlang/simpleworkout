@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block content %}
+    {% if anonerror %}
+        <p class="text-danger">You must be logged in to add a new workout.</p>
+    {% endif %}
     <br>
     <div class="col-sm-6">
         <form method="post" class="form">

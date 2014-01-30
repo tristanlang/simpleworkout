@@ -6,8 +6,8 @@ from django.contrib.auth import authenticate, logout, login
 from django.utils import timezone
 import datetime
 
-from workout.models import Log, Workout, Category, Ownership, Preference
-from workout.forms import WorkoutNotesForm, AddNewWorkoutForm, LoginForm
+from workout.models import Log, Workout, Category, Ownership, Preference, Equipment
+from workout.forms import WorkoutNotesForm, AddNewWorkoutForm, LoginForm, PreferenceForm, EquipmentForm
 
 # signup view
 # login view
@@ -55,10 +55,15 @@ def workout(request):
     global todays_workout
 
     # temporarily just use tristan as all users
-    user = User.objects.get_by_natural_key('tristan')
+    if request.user.is_anonymous(): user = User.objects.get_by_natural_key('tristan')
+    else: user = request.user
     requestdate = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone()).date()
 
     if request.method == 'POST':
+        if request.user.is_anonymous():
+            context = {'workout': todays_workout[1], 'submiterror': True}
+            return render(request, 'workout/workout.html', context)
+
         rest = request.POST.get('rest')
         completed = request.POST.get('completed')
         noted = request.POST.get('noted')
@@ -100,10 +105,14 @@ def workout(request):
         
 
 def history(request):
+    if request.user.is_anonymous(): user = User.objects.get_by_natural_key('tristan')
+    else: user = request.user
+    logs = Log.objects.filter(user=user)
+
     try:
-        history = Log.objects.all().order_by('-date')[:7]
+        history = logs.order_by('-date')[:7]
     except:
-        history = Log.objects.all().order_by('-date')
+        history = logs.order_by('-date')
     context = {'logs': history}
     return render(request, 'workout/history.html', context)
 
@@ -111,10 +120,20 @@ def history(request):
 
 def new(request):
     if request.method == 'POST':
-        return None
+        print(request.user)
+        form = AddNewWorkoutForm(request.POST)
+        if form.is_valid():
+            if request.user.is_anonymous():
+                context = {'anonerror': True, 'form': form}
+                return render(request, 'workout/new.html', context)
+            else:
+                workout = Workout(category=form.cleaned_data['category'], 
+                    detail=form.cleaned_data['detail'])
+                workout.save()
+                context = {'workout': workout}
+                return render(request, 'workout/added.html', context)
     else:
         form = AddNewWorkoutForm()
-        #context = {'categories': Category.objects.all()}
         context = {'form': form}
         return render(request, 'workout/new.html', context)
 
@@ -129,13 +148,11 @@ def login_view(request):
                 
                 if user is not None and user.is_active:
                     login(request, user)
-                    print(request)
                     newurl = request.GET.get('next')
                     return redirect(newurl)
                 else:
-                    # redirect back to login page, with error message about
-                    #   incorrect login info
-                    pass
+                    context = {'form': form, 'loginerror': True}
+                    return render(request, 'workout/login.html', context)
     else:
         form = LoginForm()
         context = {'form': form}
@@ -151,9 +168,94 @@ def logout_view(request):
 
 
 def preferences(request):
-    # temporarily just use tristanlang as all users
-    user = User.objects.get_by_natural_key('tristanlang')
-    ownerships = Ownership.objects.filter(user=user)
-    preferences = Preference.objects.filter(user=user)
-    context = {'ownerships': ownerships, 'preferences': preferences}
-    return render(request, 'workout/preferences.html', context)
+    if request.user.is_anonymous(): user = User.objects.get_by_natural_key('tristan')
+    else: user = request.user
+
+    if request.method == 'POST':
+        equipment_form = EquipmentForm(request.POST)
+        preference_form = PreferenceForm(request.POST)
+
+        # check for real user
+        if request.user.is_anonymous():
+            context = {'anonerror': True, 'equipment_form': equipment_form, 'preference_form': preference_form}
+            return render(request, 'workout/preferences.html', context)
+        else:
+            if equipment_form.is_valid():
+                updated_equipment = set(Equipment.objects.get(item=item) for item in equipment_form.cleaned_data['equipment'])
+                current_equipment = set(owner.equipment for owner in Ownership.objects.filter(user=user))
+
+                # look through current_equipment for the equipment the user did not select and delete those
+                for item in current_equipment:
+                    if item not in updated_equipment:
+                        Ownership.objects.get(equipment=item, user=user).delete()
+
+                # look through updated_equipment for the equipment the user does not currently have and add those
+                for item in updated_equipment:
+                    if item not in current_equipment:
+                        newequip = Ownership(user=user, equipment=item)
+                        newequip.save()
+
+            if preference_form.is_valid():
+                # make sure days are in appropriate ranges and formats, otherwise re-render with an error
+                try:
+                    cardiodays = int(preference_form.cleaned_data['cardio_days_per_week'])
+                    circuitdays = int(preference_form.cleaned_data['circuit_days_per_week'])
+                    strengthdays = int(preference_form.cleaned_data['strength_days_per_week'])
+                except:
+                    context = {'equipment_form': equipment_form, 'preference_form': preference_form, 'dayserror': True}
+                    return render(request, 'workout/preferences.html', context)
+                
+                if not (0 <= cardiodays <= 7) or not (0 <= circuitdays <= 7) or not (0 <= strengthdays <= 7) or not sum([cardiodays, circuitdays, strengthdays])==7:
+                    context = {'equipment_form': equipment_form, 'preference_form': preference_form, 'dayserror': True}
+                    return render(request, 'workout/preferences.html', context)
+
+                # try modifying user's preferences, otherwise create one
+                try:
+                    pcardio = Preference.objects.get(user=user, category=Category.objects.get(category='Cardio'))
+                    pcardio.days_per_week = cardiodays
+                except:
+                    pcardio = Preference(user=user, category=Category.objects.get(category='Cardio'), days_per_week=cardiodays)
+                pcardio.save()
+
+                # try modifying user's preferences, otherwise create one
+                try: 
+                    pcircuit = Preference.objects.get(user=user, category=Category.objects.get(category='Circuit'))
+                    pcircuit.days_per_week = circuitdays
+                except:
+                    pcircuit = Preference(user=user, category=Category.objects.get(category='Circuit'), days_per_week=circuitdays)
+                pcircuit.save()
+
+                # try modifying user's preferences, otherwise create one
+                try: 
+                    pstrength = Preference.objects.get(user=user, category=Category.objects.get(category='Strength'))
+                    pstrength.days_per_week = strengthdays
+                except:
+                    pstrength = Preference(user=user, category=Category.objects.get(category='Strength'), days_per_week=strengthdays)
+                pstrength.save()
+
+            print(Ownership.objects.filter(user=user))
+            context = {'preferences': Preference.objects.filter(user=user), 
+                    'ownership': Ownership.objects.filter(user=user), 'user': user}
+            return render(request, 'workout/added.html', context)
+    else:
+        # get current days_per_week for each category
+        try: cardiodays = Preference.objects.get(user=user, category=Category.objects.get(category='Cardio')).days_per_week
+        except: cardiodays = 0
+
+        try: circuitdays = Preference.objects.get(user=user, category=Category.objects.get(category='Circuit')).days_per_week
+        except: circuitdays = 0
+
+        try: strengthdays = Preference.objects.get(user=user, category=Category.objects.get(category='Strength')).days_per_week
+        except: strengthdays = 0
+
+        # get current equipment owned
+        try: owned = dict((o.equipment, o.equipment.item) for o in Ownership.objects.filter(user=user))
+        except: owned = {}
+
+        # pre-populate forms
+        preference_form = PreferenceForm({'cardio_days_per_week': cardiodays, 'circuit_days_per_week': circuitdays, 'strength_days_per_week': strengthdays})
+        equipment_form = EquipmentForm()
+        equipment_form.fields['equipment'].initial = owned
+       
+        context = {'equipment_form': equipment_form, 'preference_form': preference_form}
+        return render(request, 'workout/preferences.html', context)

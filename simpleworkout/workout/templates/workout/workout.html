@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block content %}
+    {% if submiterror %}
+        <p class="text-danger">You must be logged in to complete a workout.</p>
+    {% endif %}
+
     {% if workout %}
         <br>
         <p>{{workout.detail}}</p>
