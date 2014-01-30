@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import generic
 import random
+from django.contrib.auth.views import password_change, password_change_done
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.utils import timezone
@@ -9,8 +10,7 @@ import datetime
 from workout.models import Log, Workout, Category, Ownership, Preference, Equipment
 from workout.forms import WorkoutNotesForm, AddNewWorkoutForm, LoginForm, PreferenceForm, EquipmentForm
 
-# signup view
-# login view
+
 
 todays_workout = {}
 
@@ -259,3 +259,9 @@ def preferences(request):
        
         context = {'equipment_form': equipment_form, 'preference_form': preference_form}
         return render(request, 'workout/preferences.html', context)
+
+def cust_password_change(request):
+    return password_change(request, template_name='registration/password_change.html', post_change_redirect='/workout/password_change/done/')
+
+def cust_password_change_done(request):
+    return password_change_done(request, template_name='registration/password_changed.html')
