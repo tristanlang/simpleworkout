@@ -93,6 +93,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
+#random comment
 
 STATIC_URL = '/static/'
 
