@@ -16,9 +16,9 @@ todays_workout = {}
 
 def weight_first_category(category1, category2):
     if random.randint(0,2):
-        return random.choice(Workout.objects.filter('category' == category1))
+        return random.choice(Workout.objects.filter(category=category1))
     else:
-        return random.choice(Workout.objects.filter('category' == category2))
+        return random.choice(Workout.objects.filter(category=category2))
 
 def choose_workout(user, requestdate):
     today = requestdate
