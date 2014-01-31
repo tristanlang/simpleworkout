@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'n2z2*l=2^5mspi0hbhxq2%!os^nn@he^1870!v1j($!gsfx$35'
+SECRET_KEY = os.environ.get('SIMPLEWORKOUT_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -70,8 +70,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'workoutdb',
-        'USER': 'tristanlang',
-        'PASSWORD': 'Workout!@#$%',
+        'USER': os.environ.get('SIMPLEWORKOUT_DB_USER'),
+        'PASSWORD': os.environ.get('SIMPLEWORKOUT_DB_PASS'),
         'HOST': 'localhost',
         'PORT': '5432',
     }
