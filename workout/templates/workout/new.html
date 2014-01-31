@@ -1,0 +1,21 @@
+{% extends 'workout/base_template.html' %}
+
+{% load bootstrap3 %}
+
+{% block header %}
+    {% block title %}Add New Workout{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% if anonerror %}
+        <p class="text-danger">You must be logged in to add a new workout.</p>
+    {% endif %}
+    <br>
+    <div class="col-sm-6">
+        <form method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <div><button type="submit" class="btn btn-default">Add New</button></div>
+        </form>
+    </div>
+{% endblock %}

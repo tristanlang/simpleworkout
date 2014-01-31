@@ -1,0 +1,34 @@
+{% extends 'workout/base_template.html' %}
+
+{% block header %}
+    {% block title %}
+        {% if workout %}
+            New Workout Added
+        {% elif preferences %}
+            Preferences Updated
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% if workout %}
+        <p>Thank you for submitting your workout!</p>
+        <br>
+        <br>
+        <h5>Submitted Workout Details:</h5>
+        {{workout.detail|linebreaks}}
+    {% elif preferences %}
+        <p>Thank you for updating your preferences!</p>
+        <br>
+        <h5>User:</h5><p>{{user.username}}</p>
+        <br>
+        <h5>Equipment:</h5>
+        {% for owner in ownership %}
+            <p>{{owner.equipment.item}}</p>
+        {% endfor %}
+        <br>
+        {% for preference in preferences %}
+            <h5>{{preference.category.category}} Days Per week:</h5><p>{{preference.days_per_week}}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

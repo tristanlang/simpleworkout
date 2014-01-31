@@ -1,0 +1,48 @@
+{% extends 'workout/base_template.html' %}
+
+{% block header %}
+    {% block title %}Today's Workout{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% if submiterror %}
+        <p class="text-danger">You must be logged in to complete a workout.</p>
+    {% endif %}
+
+    {% if workout %}
+        <br>
+        <p>{{workout.detail|linebreaks}}</p>
+        <br><br>
+        {% if not addnotes %}
+            <div class="row">
+                <form method="post" id="completed">{% csrf_token %}
+                    <div class="col-sm-2"><input type="submit" class="btn btn-success" name="completed" value="Completed"></div>
+                    <div class="col-sm-2"><input type="submit" class="btn btn-info" name="rest" value="Rest Day"></div>
+                    <div class="col-sm-2"><input type="submit" class="btn btn-warning" name="next" value="Random Workout"></div>
+                </form>
+            </div>
+        {% endif %}
+    {% elif log %}
+        <p>Tomorrow's workout will appear at midnight!</p>
+        <hr>
+        <p>Today you already completed:</p>
+        {{log.workout.detail|linebreaks}}
+        <hr>
+        <p>Notes:</p>
+        {{log.notes}}
+    {% else %}
+        <p>Tomorrow's workout will appear at midnight!</p>
+    {% endif %}
+
+    {% if addnotes %}
+        <br><br>
+        <label class="control-label">Notes</label>
+        <div class="row">
+            <form method="post">{% csrf_token %}
+                <div class="col-sm-4"><textarea class="form-control" rows="3" name="notes"></textarea></div>
+                <br>
+                <div class="col-sm-2"><input type="submit" class="btn btn-success" name="noted" value="Add Notes"></div>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
