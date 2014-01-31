@@ -2,3 +2,5 @@
 /include
 /lib
 /share
+.Python
+.DS_Store
