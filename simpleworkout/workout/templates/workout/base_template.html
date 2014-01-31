@@ -22,7 +22,7 @@
                 {% if user.is_anonymous %}
                     <li><a href="{% url 'workout:login' %}?next={% firstof request.path 'workout:main' %}">Login</a></li>
                 {% else %}
-                    <li>{{user.username}} <a href="{% url 'workout:logout' %}?next={% firstof request.path 'workout:main' %}">(Logout)</a></li>
+                    <li>{{user.username}} <a href="{% url 'workout:logout' %}?next={% url 'workout:main' %}">(Logout)</a></li>
                 {% endif %}
             </ul>
         </div>

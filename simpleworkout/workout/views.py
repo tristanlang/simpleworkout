@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.utils import timezone
 import datetime
+from django.db.models import Q
 
 from workout.models import Log, Workout, Category, Ownership, Preference, Equipment
 from workout.forms import WorkoutNotesForm, AddNewWorkoutForm, LoginForm, PreferenceForm, EquipmentForm
@@ -20,7 +21,7 @@ def weight_first_category(category1, category2):
     else:
         return random.choice(Workout.objects.filter(category=category2))
 
-def choose_workout(user, requestdate):
+def choose_workout(user, requestdate, rand=False):
     today = requestdate
     try:
         history = Log.objects.all().order_by('-date')[:7]
@@ -32,7 +33,9 @@ def choose_workout(user, requestdate):
     strength = Category.objects.get(category='Strength')
     circuit = Category.objects.get(category='Circuit')
 
-    if lastworkout.workout.category == cardio:
+    if rand:
+        workout = random.choice(Workout.objects.filter(~Q(category=Category.objects.get(category='Rest Day'))))
+    elif lastworkout.workout.category == cardio:
         if len(history) > 3 and history[2].workout.category == strength:
             workout = weight_first_category(circuit, strength)
         elif len(history) > 3 and history[2].workout.category == circuit:
@@ -65,12 +68,14 @@ def workout(request):
             return render(request, 'workout/workout.html', context)
 
         # see which button was clicked
+        next = request.POST.get('next')
         rest = request.POST.get('rest')
         completed = request.POST.get('completed')
         noted = request.POST.get('noted')
 
         if completed:
             if user in todays_workout and todays_workout[user][0] >= requestdate:
+                todays_workout[user] = choose_workout(user, requestdate)
                 context = {'workout': todays_workout[user][1], 'addnotes': True}
                 return render(request, 'workout/workout.html', context)
 
@@ -81,6 +86,11 @@ def workout(request):
             context = {'log': log}
             return render(request, 'workout/workout.html', context)
 
+        if next:
+            # if user clics 'next', change the workout in todays_workout to a new workout, if the user has not yet exercised for the day
+            todays_workout[user] = choose_workout(user, requestdate, rand=True)
+            context = {'workout': todays_workout[user][1]}
+            return render(request, 'workout/workout.html', context)
         if noted:
             form = WorkoutNotesForm(request.POST)
             if form.is_valid():

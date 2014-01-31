@@ -17,8 +17,8 @@
             <div class="row">
                 <form method="post" id="completed">{% csrf_token %}
                     <div class="col-sm-2"><input type="submit" class="btn btn-success" name="completed" value="Completed"></div>
-                    <!--<div class="col-sm-2"><a href="#"><button type="button" class="btn btn-danger">Reject</button></a></div>-->
                     <div class="col-sm-2"><input type="submit" class="btn btn-info" name="rest" value="Rest Day"></div>
+                    <div class="col-sm-2"><input type="submit" class="btn btn-warning" name="next" value="Random Workout"></div>
                 </form>
             </div>
         {% endif %}
