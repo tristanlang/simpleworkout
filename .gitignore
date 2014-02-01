@@ -3,3 +3,4 @@
 /lib
 /share
 /__pycache__
+*.pyc
