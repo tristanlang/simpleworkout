@@ -75,7 +75,6 @@ def workout(request):
 
         if completed:
             if user in todays_workout and todays_workout[user][0] >= requestdate:
-                todays_workout[user] = choose_workout(user, requestdate)
                 context = {'workout': todays_workout[user][1], 'addnotes': True}
                 return render(request, 'workout/workout.html', context)
 
